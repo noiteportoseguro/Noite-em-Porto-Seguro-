@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Noite em Porto Seguro | Guia em Tempo Real</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a12;
+            color: #f0f0f0;
+        }
+
+        /* HEADER */
+        .top-header {
+            background: linear-gradient(135deg, #02020a 0%, #12121f 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(255,105,45,0.4);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo-esquerda {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .logo-esquerda .em {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #ffb347;
+        }
+        .logo-esquerda .porto {
+            font-size: 1.7rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF7E2E, #FFB347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo-esquerda .noite-tag {
+            background: #fb6b2b;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .real-time-clock {
+            background: #1a1a2e;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: monospace;
+        }
+        .real-time-clock i {
+            color: #ff3b3b;
+            margin-right: 6px;
+        }
+        .period-badge {
+            background: #fb6b2b;
+            margin-left: 8px;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        /* FILTRO MASTER */
+        .filter-master {
+            background: linear-gradient(145deg, #0f0f1a, #0a0a12);
+            margin: 1.2rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid #ff7e2e30;
+            overflow: hidden;
+        }
+        .filter-master-header {
+            background: #fb6b2b;
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+        .filter-master-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            background: #11111c;
+        }
+        .filter-master-content.open {
+            max-height: 400px;
+            padding: 1.2rem;
+        }
+        .filter-buttons-master {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            justify-content: center;
+        }
+        .master-btn {
+            background: #1e1e2e;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #ddd;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+        .master-btn.active-master, .master-btn:hover {
+            background: #fb6b2b;
+            color: white;
+        }
+
+        /* DIAS DA SEMANA - QUADRADOS BORDA REDONDA */
+        .dias-programacao {
+            margin: 1rem;
+        }
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1rem;
+        }
+        .day-card {
+            background: #1a1a2a;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            text-align: center;
+            transition: 0.2s;
+            border: 1px solid #2a2a3a;
+        }
+        .day-card:hover {
+            background: #fb6b2b20;
+            border-color: #fb6b2b;
+        }
+        .day-name {
+            font-weight: 800;
+            font-size: 1rem;
+            color: #ffb347;
+        }
+        .day-event {
+            font-size: 0.7rem;
+            color: #ffbc7a;
+            margin: 6px 0;
+        }
+        .day-btn {
+            background: #fb6b2b;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            color: white;
+        }
+
+        /* SEÇÃO PRINCIPAL */
+        .agit-section {
+            background: #11111c;
+            margin: 1rem;
+            border-radius: 2rem;
+            padding: 1.5rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .badge-live {
+            background: #ff3b3b;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+        }
+        .events-counter {
+            background: #2a2a3a;
+            border-radius: 40px;
+            padding: 0.2rem 1rem;
+            font-size: 0.8rem;
+        }
+        .grid-eventos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.2rem;
+        }
+        .event-card {
+            background: #1e1e2c;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border-left: 5px solid #ff7e2e;
+        }
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.4);
+            padding: 0.6rem 1rem;
+            font-size: 0.75rem;
+            color: #ffbc7a;
+        }
+        .event-body {
+            padding: 1rem;
+        }
+        .event-body h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+        .event-tags span {
+            background: #2c2c3a;
+            border-radius: 40px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin: 0.2rem 0.2rem;
+        }
+        .stars {
+            color: #ffb347;
+            margin: 0.5rem 0;
+        }
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.6rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .btn-map {
+            background: #fb6b2b;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: white;
+        }
+
+        /* MAPA RÁPIDO - APENAS BOTÕES DE REGIÃO */
+        .regioes-box {
+            background: #0f0f1a;
+            margin: 1rem;
+            border-radius: 2rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .region-pins {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .region-pin {
+            background: #ff6b2b;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .region-pin:hover {
+            background: #ff8c4a;
+            transform: scale(1.02);
+        }
+
+        /* MODAL DO MAPS (abre dentro do site) */
+        .modal-maps {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-maps.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #1e1e2e;
+            border-radius: 2rem;
+            width: 90%;
+            max-width: 800px;
+            height: 70%;
+            overflow: hidden;
+            position: relative;
+        }
+        .modal-content iframe {
+            width: 100%;
+            height: calc(100% - 50px);
+            border: none;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            background: #fb6b2b;
+            font-weight: bold;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .btn-ver-mapa {
+            background: #fb6b2b;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid #222;
+            background: #0a0a12;
+            margin-top: 1rem;
+        }
+        .copyright {
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+        @media (max-width: 600px) {
+            .top-header { flex-direction: column; align-items: start; gap: 8px; }
+            .logo-esquerda .porto { font-size: 1.3rem; }
+            .section-title { font-size: 1.2rem; }
+        }
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            background: #1a1a28;
+            border-radius: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-header">
+    <div class="logo-esquerda">
+        <span class="em">EM</span>
+        <span class="porto">PORTO SEGURO</span>
+        <span class="noite-tag">NOITE</span>
+        <span class="slogan-mini">| DESCUBRA · VIVA · APROVEITE</span>
+    </div>
+    <div class="real-time-clock" id="realTimeClock">
+        <i class="fas fa-clock"></i> <span id="currentDateTime">--/--/---- --:--:--</span>
+        <span class="period-badge" id="periodBadge">CARREGANDO</span>
+    </div>
+</div>
+
+<!-- FILTRO GRANDE ACOPLADO -->
+<div class="filter-master">
+    <div class="filter-master-header" id="masterFilterHeader">
+        <span><i class="fas fa-filter"></i> FILTROS: ONDE ESTÁ O AGITO?</span>
+        <i class="fas fa-chevron-down" id="toggleIcon"></i>
+    </div>
+    <div class="filter-master-content" id="masterContent">
+        <div class="filter-buttons-master" id="masterFilterButtons">
+            <button class="master-btn active-master" data-filter="all">Todos</button>
+            <button class="master-btn" data-filter="acontecendo">1️⃣ Acontecendo Agora</button>
+            <button class="master-btn" data-filter="musica">2️⃣ Música ao Vivo</button>
+            <button class="master-btn" data-filter="dj">3️⃣ DJ & Drinks</button>
+            <button class="master-btn" data-filter="beco">4️⃣ BECO DAS CORES</button>
+            <button class="master-btn" data-filter="porto">5️⃣ Porto Seguro</button>
+            <button class="master-btn reset-master" data-filter="reset">Limpar</button>
+        </div>
+    </div>
+</div>
+
+<!-- DIAS DA SEMANA - QUADRADOS BORDA REDONDA -->
+<div class="dias-programacao">
+    <div class="week-grid" id="weekGrid"></div>
+</div>
+
+<!-- SEÇÃO PRINCIPAL -->
+<div class="agit-section">
+    <div class="section-title">
+        <i class="fas fa-fire"></i> ONDE ESTÁ O AGITO EM PORTO SEGURO
+        <span class="badge-live"><i class="fas fa-circle" style="font-size: 0.5rem;"></i> AO VIVO</span>
+        <span class="events-counter" id="eventsCounter">0 eventos</span>
+    </div>
+    <div class="grid-eventos" id="eventsGrid"></div>
+</div>
+
+<!-- REGIÕES E MAPA (sem texto duplicado) -->
+<div class="regioes-box">
+    <div class="region-pins" id="regionPins"></div>
+    <button class="btn-ver-mapa" id="openMapModalBtn">
+        <i class="fas fa-map"></i> VER MAPA COMPLETO
+    </button>
+</div>
+
+<!-- MODAL DO GOOGLE MAPS (abre dentro do site) -->
+<div id="mapModal" class="modal-maps">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span><i class="fas fa-map-marked-alt"></i> Mapa de Porto Seguro</span>
+            <button class="close-modal" id="closeModalBtn">&times;</button>
+        </div>
+        <iframe id="mapsIframe" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31255.123456!2d-39.086!3d-16.4385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTbCsDI2JzE4LjYiUyAzOcKwMDUnMTIuNiJX!5e0!3m2!1spt-BR!2sbr!4v1234567890" allowfullscreen></iframe>
+    </div>
+</div>
+
+<footer>
+    <div class="copyright">
+        © 2025 <strong>Noite em Porto Seguro</strong> — EM PORTO SEGURO · DESCUBRA. VIVA. APROVEITE.
+    </div>
+</footer>
+
+<script>
+    // ======================== RELÓGIO EM TEMPO REAL ========================
+    function updateRealTime() {
+        const now = new Date();
+        const dayName = now.toLocaleDateString('pt-BR', { weekday: 'short' }).toUpperCase();
+        const formattedDate = now.toLocaleDateString('pt-BR');
+        const formattedTime = now.toLocaleTimeString('pt-BR');
+        const hours = now.getHours();
+        
+        let period = "";
+        if (hours >= 6 && hours < 12) period = "🌅 MANHÃ";
+        else if (hours >= 12 && hours < 18) period = "☀️ TARDE";
+        else period = "🌙 NOITE";
+        
+        document.getElementById("currentDateTime").innerHTML = `${dayName} · ${formattedDate}  ${formattedTime}`;
+        document.getElementById("periodBadge").innerHTML = period;
+    }
+    setInterval(updateRealTime, 1000);
+    updateRealTime();
+
+    // ======================== EVENTOS ========================
+    const eventos = [
+        { nome: "MAROCHA", local: "Porto Seguro", estilo: "Bar & Covers", artista: "Banda Marocha", estrelas: 5, preco: "R$ 30", horario: "21:00", filtro: "musica", tipoLabel: "Música ao Vivo", lat: -16.4385, lng: -39.0806 },
+        { nome: "LUAU TOA TOA", local: "Toa Toa", estilo: "#Axé", artista: "DJ Toa Toa", estrelas: 5, preco: "R$ 45", horario: "22:30", filtro: "acontecendo", tipoLabel: "Acontecendo Agora", lat: -16.4402, lng: -39.0788 },
+        { nome: "LUAU ÁREA BEAT", local: "Área Beat", estilo: "#Eletrônica", artista: "DJ Area", estrelas: 5, preco: "R$ 50", horario: "23:00", filtro: "dj", tipoLabel: "DJ & Drinks", lat: -16.4420, lng: -39.0775 },
+        { nome: "LUAU ONDAS", local: "Praia do Centro", estilo: "Reggae", artista: "Luau Ondas Band", estrelas: 5, preco: "R$ 35", horario: "20:30", filtro: "acontecendo", tipoLabel: "Acontecendo Agora", lat: -16.4360, lng: -39.0815 },
+        { nome: "PAGODE NA PASSARELA", local: "Passarela", estilo: "#Pagode", artista: "@FunK", estrelas: 4, preco: "R$ 30", horario: "22:45", filtro: "musica", tipoLabel: "Música ao Vivo", lat: -16.4391, lng: -39.0812 },
+        { nome: "CLUB BALADA", local: "Porto Seguro", estilo: "#Funk", artista: "@Dimacam", estrelas: 5, preco: "R$ 40", horario: "23:00", filtro: "dj", tipoLabel: "DJ & Drinks", lat: -16.4400, lng: -39.0795 },
+        { nome: "BECO DAS CORES", local: "Centro Histórico", estilo: "Drinks e Covers", artista: "Live Band", estrelas: 5, preco: "Grátis", horario: "20:00", filtro: "beco", tipoLabel: "BECO DAS CORES", lat: -16.4380, lng: -39.0820 },
+        { nome: "FORRÓ DO PORTO", local: "Arraial d'Ajuda", estilo: "#Forró", artista: "Sanfoneiro", estrelas: 5, preco: "R$ 10", horario: "22:00", filtro: "acontecendo", tipoLabel: "Acontecendo Agora", lat: -16.5130, lng: -39.0710 }
+    ];
+
+    let diasProgramacao = [
+        { nome: "SEGUNDA", evento: "MAROCHA · Ao Vivo", filtroEvento: "musica" },
+        { nome: "TERÇA", evento: "LUAU TOA TOA", filtroEvento: "acontecendo" },
+        { nome: "QUARTA", evento: "LUAU ÁREA BEAT", filtroEvento: "dj" },
+        { nome: "QUINTA", evento: "LUAU ONDAS · Reggae", filtroEvento: "acontecendo" },
+        { nome: "SEXTA", evento: "BECO DAS CORES", filtroEvento: "beco" },
+        { nome: "SÁBADO", evento: "CLUB BALADA", filtroEvento: "dj" },
+        { nome: "DOMINGO", evento: "PAGODE NA PASSARELA", filtroEvento: "musica" }
+    ];
+
+    let currentFilter = "all";
+
+    // Abrir maps DENTRO do site (modal)
+    function abrirMapsInterno(lat, lng) {
+        const iframe = document.getElementById("mapsIframe");
+        iframe.src = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${lat},${lng}&zoom=15&language=pt`;
+        document.getElementById("mapModal").classList.add("active");
+    }
+
+    function abrirMapaGeral() {
+        const iframe = document.getElementById("mapsIframe");
+        iframe.src = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15627.123456!2d-39.086!3d-16.4385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTbCsDI2JzE4LjYiUyAzOcKwMDUnMTIuNiJX!5e0!3m2!1spt-BR!2sbr!4v1700000000000";
+        document.getElementById("mapModal").classList.add("active");
+    }
+
+    function closeModal() {
+        document.getElementById("mapModal").classList.remove("active");
+    }
+
+    function renderDays() {
+        const weekContainer = document.getElementById("weekGrid");
+        weekContainer.innerHTML = diasProgramacao.map(day => `
+            <div class="day-card">
+                <div class="day-name">${day.nome}</div>
+                <div class="day-event">${day.evento}</div>
+                <button class="day-btn" onclick="aplicarFiltroDia('${day.filtroEvento}')">📅 Ver eventos</button>
+            </div>
+        `).join("");
+    }
+
+    window.aplicarFiltroDia = (filtro) => {
+        currentFilter = filtro;
+        renderEvents();
+        document.querySelectorAll(".master-btn").forEach(btn => {
+            btn.classList.remove("active-master");
+            if(btn.getAttribute("data-filter") === filtro) btn.classList.add("active-master");
+        });
+        document.querySelector(".agit-section").scrollIntoView({ behavior: "smooth" });
+    };
+
+    function renderEvents() {
+        const grid = document.getElementById("eventsGrid");
+        const counterSpan = document.getElementById("eventsCounter");
+        let filtered = [...eventos];
+        if(currentFilter !== "all") {
+            filtered = eventos.filter(ev => ev.filtro === currentFilter);
+        }
+
+        counterSpan.innerText = filtered.length + " eventos";
+        if(filtered.length === 0) {
+            grid.innerHTML = `<div class="no-results"><i class="fas fa-info-circle"></i> Nenhum evento para esse filtro.</div>`;
+            return;
+        }
+
+        grid.innerHTML = filtered.map(ev => `
+            <div class="event-card">
+                <div class="event-header">
+                    <span><i class="fas fa-map-pin"></i> ${ev.local}</span>
+                    <span><i class="fas fa-bolt"></i> ${ev.tipoLabel}</span>
+                </div>
+                <div class="event-body">
+                    <h4>${ev.nome}</h4>
+                    <div class="event-tags">
+                        <span>${ev.estilo}</span>
+                        <span>🎤 ${ev.artista}</span>
+                    </div>
+                    <div class="stars">${'★'.repeat(ev.estrelas)}</div>
+                    <div class="price-row">
+                        <span><strong>${ev.preco}</strong> · ${ev.horario}</span>
+                        <button class="btn-map" onclick="abrirMapsInterno(${ev.lat}, ${ev.lng})"><i class="fas fa-directions"></i> Como chegar</button>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    function renderRegions() {
+        const container = document.getElementById("regionPins");
+        const regioes = ["BECO DAS CORES", "Passarela", "Arraial d'Ajuda", "Trancoso", "Orla Norte", "Toa Toa"];
+        container.innerHTML = regioes.map(reg => `<div class="region-pin" onclick="abrirMapaGeral()"><i class="fas fa-map-marker-alt"></i> ${reg}</div>`).join("");
+    }
+
+    function setupMasterFilter() {
+        const header = document.getElementById("masterFilterHeader");
+        const content = document.getElementById("masterContent");
+        const icon = document.getElementById("toggleIcon");
+        header.addEventListener("click", () => {
+            content.classList.toggle("open");
+            icon.classList.toggle("fa-chevron-down");
+            icon.classList.toggle("fa-chevron-up");
+        });
+
+        const btns = document.querySelectorAll("#masterFilterButtons .master-btn");
+        btns.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const filterVal = btn.getAttribute("data-filter");
+                if(filterVal === "reset") {
+                    currentFilter = "all";
+                    btns.forEach(b => b.classList.remove("active-master"));
+                    document.querySelector("#masterFilterButtons .master-btn[data-filter='all']").classList.add("active-master");
+                } else {
+                    currentFilter = filterVal;
+                    btns.forEach(b => b.classList.remove("active-master"));
+                    btn.classList.add("active-master");
+                }
+                renderEvents();
+            });
+        });
+    }
+
+    function init() {
+        renderDays();
+        renderEvents();
+        renderRegions();
+        setupMasterFilter();
+        document.getElementById("masterContent").classList.add("open");
+        document.getElementById("openMapModalBtn").onclick = () => abrirMapaGeral();
+        document.getElementById("closeModalBtn").onclick = () => closeModal();
+        document.getElementById("mapModal").onclick = (e) => { if(e.target === document.getElementById("mapModal")) closeModal(); };
+    }
+    init();
+
+    window.abrirMapsInterno = abrirMapsInterno;
+    window.abrirMapaGeral = abrirMapaGeral;
+    window.closeModal = closeModal;
+</script>
+</body>
+  </html>
