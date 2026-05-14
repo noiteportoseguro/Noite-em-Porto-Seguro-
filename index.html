@@ -311,6 +311,31 @@
             background: #ff8c4a;
         }
 
+        /* BOTÃO FAIR PRICE HOME */
+        .fairprice-container {
+            text-align: center;
+            margin: 1rem;
+        }
+        .btn-fairprice {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            color: white;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        .btn-fairprice:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+        }
+
         /* MODAL MAPS */
         .modal-maps {
             display: none;
@@ -378,6 +403,7 @@
         @media (max-width: 600px) {
             .top-header { flex-direction: column; align-items: start; gap: 8px; }
             .logo-esquerda .porto { font-size: 1.3rem; }
+            .btn-fairprice { padding: 0.6rem 1.5rem; font-size: 0.9rem; }
         }
         .no-results {
             text-align: center;
@@ -451,6 +477,14 @@
     </button>
 </div>
 
+<!-- BOTÃO FAIR PRICE HOME -->
+<div class="fairprice-container">
+    <button class="btn-fairprice" id="fairpriceHomeBtn">
+        <i class="fas fa-building"></i> Fair Price Home
+        <i class="fas fa-arrow-right"></i>
+    </button>
+</div>
+
 <!-- MODAL MAPS -->
 <div id="mapModal" class="modal-maps">
     <div class="modal-content">
@@ -482,6 +516,11 @@
     }
     setInterval(updateRealTime, 1000);
     updateRealTime();
+
+    // BOTÃO FAIR PRICE HOME - redireciona para fair.html
+    document.getElementById("fairpriceHomeBtn").addEventListener("click", function() {
+        window.location.href = "fair.html";
+    });
 
     // EVENTOS ATUALIZADOS
     const eventos = [
@@ -684,4 +723,4 @@
     window.abrirMapaGeral = abrirMapaGeral;
 </script>
 </body>
-</html>
+    </html>
