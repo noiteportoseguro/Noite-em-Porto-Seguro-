@@ -1,0 +1,2555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fair Price - Imóveis</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --primary-dark: #3e8e41;
+      --secondary-color: #FF5722;
+      --dark-color: #333;
+      --light-color: #f8f9fa;
+      --gray-color: #666;
+      --border-radius: 10px;
+      --box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      background-color: #f0f0f0;
+      font-family: 'Poppins', sans-serif;
+      color: var(--dark-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      /* Proteção contra captura de tela */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* Notificações */
+    .notification-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 350px;
+    }
+    
+    .notification {
+      background: white;
+      padding: 15px 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      transform: translateX(400px);
+      opacity: 0;
+      transition: all 0.5s ease;
+      border-left: 4px solid var(--primary-color);
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    
+    .notification.success {
+      border-left-color: var(--primary-color);
+    }
+    
+    .notification.error {
+      border-left-color: #f44336;
+    }
+    
+    .notification.warning {
+      border-left-color: #ff9800;
+    }
+    
+    .notification.info {
+      border-left-color: #2196f3;
+    }
+    
+    .notification-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+    }
+    
+    .notification.success .notification-icon {
+      background-color: var(--primary-color);
+    }
+    
+    .notification.error .notification-icon {
+      background-color: #f44336;
+    }
+    
+    .notification.warning .notification-icon {
+      background-color: #ff9800;
+    }
+    
+    .notification.info .notification-icon {
+      background-color: #2196f3;
+    }
+    
+    .notification-content {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .notification-message {
+      font-size: 0.9rem;
+      color: var(--gray-color);
+    }
+    
+    .notification-close {
+      background: none;
+      border: none;
+      color: var(--gray-color);
+      cursor: pointer;
+      font-size: 16px;
+      transition: var(--transition);
+    }
+    
+    .notification-close:hover {
+      color: var(--dark-color);
+    }
+
+    /* Modal de Login/Cadastro */
+    .auth-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    
+    .auth-container {
+      background: white;
+      border-radius: var(--border-radius);
+      width: 90%;
+      max-width: 400px;
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+    }
+    
+    .auth-tabs {
+      display: flex;
+      background-color: var(--light-color);
+    }
+    
+    .auth-tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+    }
+    
+    .auth-tab.active {
+      border-bottom-color: var(--primary-color);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    .auth-form {
+      padding: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+    }
+    
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    }
+    
+    .auth-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .auth-btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .auth-switch {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 0.9rem;
+    }
+    
+    .auth-switch a {
+      color: var(--primary-color);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .user-menu {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: white;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+  
+    /* Header com imagem de fundo */
+    .header {
+      background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://sonharemorar.mrv.com.br/wp-content/uploads/2023/05/villa-padova-ppc-fachada-divulgacao-imoveis-mrv.webp');
+      background-size: cover;
+      background-position: center;
+      width: 100%;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .header-content {
+      z-index: 2;
+      max-width: 800px;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+    
+    /* Logo redondo */
+    .logo-redondo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      z-index: 2;
+      transition: var(--transition);
+      border: 3px solid white;
+      margin-bottom: 20px;
+    }
+    
+    .logo-redondo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    
+    .logo-redondo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    /* Banner de parceiros */
+    .partners-banner {
+      background-color: white;
+      padding: 20px 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .partners-container {
+      display: flex;
+      animation: slide 30s linear infinite;
+      width: max-content;
+    }
+    
+    .partner-item {
+      flex-shrink: 0;
+      width: 150px;
+      margin: 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .partner-item img {
+      max-width: 100%;
+      max-height: 60px;
+      filter: grayscale(100%);
+      transition: var(--transition);
+    }
+    
+    .partner-item:hover img {
+      filter: grayscale(0%);
+    }
+    
+    @keyframes slide {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+    
+    /* Container da barra de pesquisa + filtro */
+    .search-filter-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      padding: 30px 20px;
+      background-color: var(--light-color);
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    /* Barra de pesquisa */
+    .search-bar {
+      position: relative;
+      width: 60%;
+      max-width: 600px;
+      min-width: 300px;
+    }
+    
+    .search-bar input {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 30px;
+      border: none;
+      font-size: 16px;
+      box-shadow: var(--box-shadow);
+      padding-right: 50px;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+    }
+    
+    .search-bar input:focus {
+      outline: none;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+    
+    .search-bar button {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--primary-color);
+      font-size: 20px;
+      transition: var(--transition);
+    }
+    
+    .search-bar button:hover {
+      color: var(--secondary-color);
+    }
+    
+    /* Filtro de casas - NOVO DESIGN */
+    .filter-container {
+      position: relative;
+      width: 30%;
+      min-width: 200px;
+      max-width: 300px;
+    }
+    
+    .main-filter-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 500;
+      box-shadow: var(--box-shadow);
+      width: 100%;
+      justify-content: center;
+      transition: var(--transition);
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .main-filter-btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    /* Novo design para filtros */
+    .advanced-filters {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      z-index: 1000;
+      display: none;
+      padding: 20px;
+      margin-top: 10px;
+    }
+    
+    .advanced-filters.show {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    
+    .filter-section {
+      margin-bottom: 20px;
+    }
+    
+    .filter-section h4 {
+      margin-bottom: 10px;
+      font-size: 16px;
+      color: var(--dark-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .filter-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .filter-option {
+      background-color: #f0f0f0;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+    
+    .filter-option:hover {
+      background-color: #e0e0e0;
+    }
+    
+    .filter-option.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .filter-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .clear-filters {
+      background: none;
+      border: none;
+      color: var(--gray-color);
+      cursor: pointer;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+    
+    .clear-filters:hover {
+      color: var(--secondary-color);
+    }
+    
+    .apply-filters {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+    
+    .apply-filters:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    /* Container de propriedades */
+    .properties-container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 20px;
+      flex: 1;
+    }
+    
+    .properties-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+    
+    .property-card {
+      background-color: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      position: relative;
+    }
+    
+    .property-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .property-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 2;
+    }
+    
+    .property-badge.destaque {
+      background-color: var(--secondary-color);
+    }
+    
+    .property-badge.patrocinado {
+      background-color: #ff9800;
+    }
+    
+    .property-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    
+    .property-info {
+      padding: 20px;
+    }
+    
+    .property-title {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: var(--dark-color);
+      font-weight: 600;
+    }
+    
+    .property-location {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--gray-color);
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+    
+    .property-features {
+      display: flex;
+      gap: 15px;
+      margin: 15px 0;
+    }
+    
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9rem;
+    }
+    
+    .property-price {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-top: 10px;
+    }
+    
+    .property-type {
+      display: inline-block;
+      padding: 3px 8px;
+      background-color: #e0f2e0;
+      color: var(--primary-color);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-top: 5px;
+    }
+    
+    .no-results {
+      text-align: center;
+      grid-column: 1 / -1;
+      padding: 50px;
+      color: var(--gray-color);
+    }
+    
+    /* Modal de detalhes do imóvel */
+    .property-detail-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+    
+    .property-detail-container {
+      background: white;
+      border-radius: var(--border-radius);
+      width: 90%;
+      max-width: 800px;
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .property-detail-header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    
+    .property-detail-title {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+    
+    .property-detail-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--gray-color);
+      transition: var(--transition);
+    }
+    
+    .property-detail-close:hover {
+      color: var(--secondary-color);
+    }
+    
+    .property-detail-content {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    
+    .property-detail-image {
+      width: 100%;
+      border-radius: var(--border-radius);
+      height: 300px;
+      object-fit: cover;
+    }
+    
+    .property-detail-info h3 {
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .property-detail-features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .property-detail-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .property-detail-contact {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      margin-top: 20px;
+    }
+    
+    .delete-property-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 15px;
+      transition: var(--transition);
+    }
+    
+    .delete-property-btn:hover {
+      background-color: #d32f2f;
+    }
+    
+    /* Footer */
+    footer {
+      background-color: var(--dark-color);
+      color: white;
+      padding: 40px 20px;
+      margin-top: 50px;
+    }
+    
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+    
+    .footer-column h3 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    .footer-column h3::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 50px;
+      height: 2px;
+      background-color: var(--primary-color);
+    }
+    
+    .footer-column p {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 10px;
+    }
+    
+    .footer-links a {
+      color: #ddd;
+      text-decoration: none;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary-color);
+      transform: translateX(5px);
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .social-links a {
+      color: white;
+      background-color: rgba(255,255,255,0.1);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    
+    .social-links a:hover {
+      background-color: var(--primary-color);
+      transform: translateY(-3px);
+    }
+    
+    .copyright {
+      text-align: center;
+      padding-top: 30px;
+      margin-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    /* Painel de administração */
+    .admin-panel-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background-color: var(--secondary-color);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: var(--transition);
+      z-index: 1000;
+    }
+    
+    .admin-panel-btn:hover {
+      transform: scale(1.1);
+      background-color: #e64a19;
+    }
+
+    .admin-panel {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      height: 100vh;
+      background-color: white;
+      box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+      transition: var(--transition);
+      z-index: 1001;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    
+    .admin-panel.show {
+      right: 0;
+    }
+    
+    .admin-panel h2 {
+      color: var(--dark-color);
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 10px;
+    }
+    
+    .admin-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .admin-tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: var(--transition);
+    }
+    
+    .admin-tab.active {
+      border-bottom-color: var(--primary-color);
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    .admin-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .form-group label {
+      font-weight: 500;
+      color: var(--dark-color);
+    }
+    
+    .form-group input, 
+    .form-group textarea, 
+    .form-group select {
+      padding: 12px 15px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ddd;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+    }
+    
+    .form-group input:focus, 
+    .form-group textarea:focus, 
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .form-btn {
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .submit-btn {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .submit-btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .cancel-btn {
+      background-color: #f0f0f0;
+      color: var(--dark-color);
+    }
+    
+    .cancel-btn:hover {
+      background-color: #e0e0e0;
+    }
+    
+    .properties-list {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .property-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .property-item:last-child {
+      border-bottom: none;
+    }
+    
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .users-list {
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .user-item {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .user-item:last-child {
+      border-bottom: none;
+    }
+    
+    .user-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .user-email {
+      color: var(--gray-color);
+      font-size: 0.9rem;
+    }
+    
+    .user-phone {
+      color: var(--gray-color);
+      font-size: 0.9rem;
+    }
+    
+    /* Overlay para o painel */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+    }
+    
+    .overlay.show {
+      display: block;
+    }
+    
+    /* Botão para adicionar imóvel público */
+    .add-property-btn {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: var(--transition);
+      z-index: 1000;
+    }
+    
+    .add-property-btn:hover {
+      transform: scale(1.1);
+      background-color: var(--primary-dark);
+    }
+    
+    /* Botão para anunciar imóvel (usuário comum) */
+    .announce-btn {
+      position: fixed;
+      bottom: 170px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background-color: #2196f3;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: var(--transition);
+      z-index: 1000;
+    }
+    
+    .announce-btn:hover {
+      transform: scale(1.1);
+      background-color: #0b7dda;
+    }
+    
+    /* Modal para adicionar imóvel público */
+    .property-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    
+    .property-container {
+      background: white;
+      border-radius: var(--border-radius);
+      width: 90%;
+      max-width: 500px;
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .property-header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .property-form {
+      padding: 20px;
+    }
+    
+    /* Modal de perfil */
+    .profile-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    
+    .profile-container {
+      background: white;
+      border-radius: var(--border-radius);
+      width: 90%;
+      max-width: 500px;
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+    }
+    
+    .profile-header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .profile-content {
+      padding: 20px;
+    }
+    
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: white;
+      margin-bottom: 15px;
+    }
+    
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .profile-email {
+      color: var(--gray-color);
+      margin-bottom: 15px;
+    }
+    
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--gray-color);
+    }
+    
+    /* Responsividade */
+    @media (max-width: 992px) {
+      .admin-panel {
+        width: 350px;
+      }
+      
+      .property-detail-content {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .search-filter-container {
+        flex-direction: column;
+      }
+      
+      .search-bar, .filter-container {
+        width: 100%;
+        max-width: 100%;
+      }
+      
+      .admin-panel {
+        width: 100%;
+        max-width: 100%;
+      }
+      
+      .properties-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .user-menu {
+        position: relative;
+        top: 0;
+        right: 0;
+        justify-content: center;
+        margin-top: 15px;
+      }
+      
+      .announce-btn {
+        bottom: 170px;
+        right: 20px;
+      }
+      
+      .add-property-btn {
+        bottom: 100px;
+        right: 20px;
+      }
+      
+      .admin-panel-btn {
+        bottom: 30px;
+        right: 20px;
+      }
+      
+      .filter-options {
+        justify-content: center;
+      }
+      
+      .notification-container {
+        max-width: 90%;
+        left: 5%;
+        right: 5%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Container de notificações -->
+  <div class="notification-container" id="notificationContainer"></div>
+
+  <!-- Modal de Login/Cadastro -->
+  <div class="auth-modal" id="authModal">
+    <div class="auth-container">
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="loginTab">Login</div>
+        <div class="auth-tab" id="registerTab">Cadastro</div>
+      </div>
+      
+      <div class="auth-form">
+        <!-- Formulário de Login -->
+        <form id="loginForm" style="display: block;">
+          <div class="form-group">
+            <label for="loginEmail">E-mail</label>
+            <input type="email" id="loginEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Senha</label>
+            <input type="password" id="loginPassword" required>
+          </div>
+          <button type="submit" class="auth-btn">Entrar</button>
+          <div class="auth-switch">
+            Não tem uma conta? <a id="switchToRegister">Cadastre-se</a>
+          </div>
+        </form>
+        
+        <!-- Formulário de Cadastro -->
+        <form id="registerForm" style="display: none;">
+          <div class="form-group">
+            <label for="registerName">Nome Completo</label>
+            <input type="text" id="registerName" required>
+          </div>
+          <div class="form-group">
+            <label for="registerEmail">E-mail</label>
+            <input type="email" id="registerEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="registerPhone">Telefone</label>
+            <input type="tel" id="registerPhone" required>
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Senha</label>
+            <input type="password" id="registerPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="registerType">Tipo de Usuário</label>
+            <select id="registerType">
+              <option value="user">Usuário</option>
+              <option value="sponsor">Patrocinador</option>
+            </select>
+          </div>
+          <button type="submit" class="auth-btn">Cadastrar</button>
+          <div class="auth-switch">
+            Já tem uma conta? <a id="switchToLogin">Faça login</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Perfil -->
+  <div class="profile-modal" id="profileModal" style="display: none;">
+    <div class="profile-container">
+      <div class="profile-header">
+        <h2>Meu Perfil</h2>
+      </div>
+      <div class="profile-content">
+        <div class="profile-info">
+          <div class="profile-avatar" id="profileAvatar">U</div>
+          <div class="profile-name" id="profileName">Usuário</div>
+          <div class="profile-email" id="profileEmail">usuario@email.com</div>
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat-card">
+            <div class="stat-value" id="statProperties">0</div>
+            <div class="stat-label">Imóveis Anunciados</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statFavorites">0</div>
+            <div class="stat-label">Favoritos</div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="profilePhone">Telefone</label>
+          <input type="tel" id="profilePhone" value="(11) 99999-9999">
+        </div>
+        
+        <div class="form-group">
+          <label for="profileType">Tipo de Usuário</label>
+          <input type="text" id="profileType" readonly value="Usuário">
+        </div>
+        
+        <div class="form-actions">
+          <button class="form-btn submit-btn" id="saveProfileBtn">Salvar Alterações</button>
+          <button class="form-btn cancel-btn" id="closeProfileBtn">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para adicionar imóvel (usuário comum) -->
+  <div class="property-modal" id="propertyModal" style="display: none;">
+    <div class="property-container">
+      <div class="property-header">
+        <h2>Anunciar Imóvel</h2>
+      </div>
+      <div class="property-form">
+        <form id="propertyForm">
+          <div class="form-group">
+            <label for="propertyTitle">Título do Anúncio</label>
+            <input type="text" id="propertyTitle" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="propertyType">Tipo de Imóvel</label>
+            <select id="propertyType" required>
+              <option value="">Selecione</option>
+              <option value="casa">Casa</option>
+              <option value="apartamento">Apartamento</option>
+              <option value="terreno">Terreno</option>
+              <option value="comercial">Comercial</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="propertyPrice">Preço (R$)</label>
+            <input type="number" id="propertyPrice" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="propertyLocation">Localização</label>
+            <input type="text" id="propertyLocation" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="propertyDescription">Descrição</label>
+            <textarea id="propertyDescription" rows="4"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="propertyImage">URL da Imagem</label>
+            <input type="text" id="propertyImage" placeholder="https://exemplo.com/imagem.jpg">
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="form-btn submit-btn">Anunciar</button>
+            <button type="button" class="form-btn cancel-btn" id="cancelPropertyBtn">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo-redondo">
+      <img src="https://via.placeholder.com/120x120/4CAF50/FFFFFF?text=FP" alt="Fair Price Logo">
+    </div>
+    <div class="header-content">
+      <h1>Fair Price Imóveis</h1>
+      <p>Encontre o imóvel dos seus sonhos com o melhor preço</p>
+    </div>
+    
+    <!-- Menu do usuário -->
+    <div class="user-menu" id="userMenu" style="display: none;">
+      <div class="user-info" id="userInfo">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span id="userName">Usuário</span>
+      </div>
+      <button class="logout-btn" id="logoutBtn">Sair</button>
+    </div>
+  </header>
+
+  <!-- Banner de parceiros -->
+  <div class="partners-banner">
+    <div class="partners-container">
+      <div class="partner-item">
+        <img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Construtora+A" alt="Construtora A">
+      </div>
+      <div class="partner-item">
+        <img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Imobiliária+B" alt="Imobiliária B">
+      </div>
+      <div class="partner-item">
+        <img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Incorporadora+C" alt="Incorporadora C">
+      </div>
+      <div class="partner-item">
+        <img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Banco+D" alt="Banco D">
+      </div>
+      <div class="partner-item">
+        <img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Corretora+E" alt="Corretora E">
+      </div>
+      <div class="partner-item">
+        <img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Construtora+A" alt="Construtora A">
+      </div>
+      <div class="partner-item">
+        <img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Imobiliária+B" alt="Imobiliária B">
+      </div>
+      <div class="partner-item">
+        <img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Incorporadora+C" alt="Incorporadora C">
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra de pesquisa e filtros -->
+  <div class="search-filter-container">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Buscar por localização, tipo de imóvel...">
+      <button id="searchBtn"><i class="fas fa-search"></i></button>
+    </div>
+    
+    <div class="filter-container">
+      <button class="main-filter-btn" id="filterBtn">
+        <i class="fas fa-filter"></i> Filtros
+      </button>
+      
+      <div class="advanced-filters" id="advancedFilters">
+        <div class="filter-section">
+          <h4><i class="fas fa-home"></i> Tipo de Imóvel</h4>
+          <div class="filter-options">
+            <button class="filter-option" data-filter="type" data-value="casa">Casa</button>
+            <button class="filter-option" data-filter="type" data-value="apartamento">Apartamento</button>
+            <button class="filter-option" data-filter="type" data-value="terreno">Terreno</button>
+            <button class="filter-option" data-filter="type" data-value="comercial">Comercial</button>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <h4><i class="fas fa-tag"></i> Preço</h4>
+          <div class="filter-options">
+            <button class="filter-option" data-filter="price" data-value="0-200000">Até R$ 200.000</button>
+            <button class="filter-option" data-filter="price" data-value="200000-500000">R$ 200.000 - 500.000</button>
+            <button class="filter-option" data-filter="price" data-value="500000-1000000">R$ 500.000 - 1.000.000</button>
+            <button class="filter-option" data-filter="price" data-value="1000000+">Acima de R$ 1.000.000</button>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <h4><i class="fas fa-map-marker-alt"></i> Localização</h4>
+          <div class="filter-options">
+            <button class="filter-option" data-filter="location" data-value="centro">Centro</button>
+            <button class="filter-option" data-filter="location" data-value="zona-sul">Zona Sul</button>
+            <button class="filter-option" data-filter="location" data-value="zona-norte">Zona Norte</button>
+            <button class="filter-option" data-filter="location" data-value="zona-leste">Zona Leste</button>
+            <button class="filter-option" data-filter="location" data-value="zona-oeste">Zona Oeste</button>
+          </div>
+        </div>
+        
+        <div class="filter-actions">
+          <button class="clear-filters" id="clearFilters">Limpar Filtros</button>
+          <button class="apply-filters" id="applyFilters">Aplicar Filtros</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container de propriedades -->
+  <div class="properties-container">
+    <h2>Imóveis em Destaque</h2>
+    <div class="properties-grid" id="propertiesGrid">
+      <!-- As propriedades serão carregadas aqui -->
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-column">
+        <h3>Sobre Nós</h3>
+        <p>Fair Price Imóveis é a plataforma que conecta você aos melhores imóveis com preços justos e transparentes.</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Links Rápidos</h3>
+        <ul class="footer-links">
+          <li><a href="#"><i class="fas fa-home"></i> Início</a></li>
+          <li><a href="#"><i class="fas fa-search"></i> Buscar Imóveis</a></li>
+          <li><a href="#"><i class="fas fa-star"></i> Imóveis em Destaque</a></li>
+          <li><a href="#"><i class="fas fa-info-circle"></i> Sobre Nós</a></li>
+          <li><a href="#"><i class="fas fa-envelope"></i> Contato</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Contato</h3>
+        <ul class="footer-links">
+          <li><a href="#"><i class="fas fa-map-marker-alt"></i> Rua Exemplo, 123 - São Paulo, SP</a></li>
+          <li><a href="#"><i class="fas fa-phone"></i> (11) 9999-9999</a></li>
+          <li><a href="#"><i class="fas fa-envelope"></i> contato@fairprice.com</a></li>
+          <li><a href="#"><i class="fas fa-clock"></i> Seg - Sex: 9h às 18h</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      &copy; 2023 Fair Price Imóveis. Todos os direitos reservados.
+    </div>
+  </footer>
+
+  <!-- Botões flutuantes -->
+  <div class="announce-btn" id="announceBtn" title="Anunciar Imóvel" style="display: none;">
+    <i class="fas fa-bullhorn"></i>
+  </div>
+  
+  <div class="add-property-btn" id="addPropertyBtn" title="Adicionar Imóvel (Patrocinador)" style="display: none;">
+    <i class="fas fa-plus"></i>
+  </div>
+  
+  <div class="admin-panel-btn" id="adminPanelBtn" title="Painel Administrativo" style="display: none;">
+    <i class="fas fa-cog"></i>
+  </div>
+
+  <!-- Painel de Administração -->
+  <div class="overlay" id="overlay"></div>
+  
+  <div class="admin-panel" id="adminPanel">
+    <h2>Painel Administrativo</h2>
+    
+    <div class="admin-tabs">
+      <div class="admin-tab active" data-tab="properties">Imóveis</div>
+      <div class="admin-tab" data-tab="users">Usuários</div>
+      <div class="admin-tab" data-tab="sponsors">Patrocinadores</div>
+    </div>
+    
+    <!-- Aba de Imóveis -->
+    <div class="admin-tab-content" id="propertiesTab">
+      <h3>Gerenciar Imóveis</h3>
+      
+      <div class="properties-list" id="adminPropertiesList">
+        <!-- Lista de imóveis será carregada aqui -->
+      </div>
+    </div>
+    
+    <!-- Aba de Usuários -->
+    <div class="admin-tab-content" id="usersTab" style="display: none;">
+      <h3>Gerenciar Usuários</h3>
+      
+      <div class="users-list" id="adminUsersList">
+        <!-- Lista de usuários será carregada aqui -->
+      </div>
+    </div>
+    
+    <!-- Aba de Patrocinadores -->
+    <div class="admin-tab-content" id="sponsorsTab" style="display: none;">
+      <h3>Gerenciar Patrocinadores</h3>
+      
+      <div class="users-list" id="adminSponsorsList">
+        <!-- Lista de patrocinadores será carregada aqui -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Banco de dados local
+    const db = {
+      users: JSON.parse(localStorage.getItem('users')) || [
+        { id: 1, name: "Admin", email: "admin@fairprice.com", password: "admin123", phone: "(11) 99999-9999", type: "admin" },
+        { id: 2, name: "Patrocinador Exemplo", email: "patrocinador@fairprice.com", password: "patrocinador123", phone: "(11) 98888-8888", type: "sponsor" },
+        { id: 3, name: "Usuário Exemplo", email: "usuario@fairprice.com", password: "usuario123", phone: "(11) 97777-7777", type: "user" }
+      ],
+      properties: JSON.parse(localStorage.getItem('properties')) || [
+        {
+          id: 1,
+          title: "Casa Moderna com Piscina",
+          type: "casa",
+          price: 850000,
+          location: "Zona Sul",
+          description: "Linda casa moderna com 3 quartos, 2 banheiros, piscina e área gourmet.",
+          image: "https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          userId: 2,
+          sponsored: true,
+          featured: true
+        },
+        {
+          id: 2,
+          title: "Apartamento Compacto Centro",
+          type: "apartamento",
+          price: 350000,
+          location: "Centro",
+          description: "Apartamento compacto, ideal para solteiros ou casais, próximo a tudo.",
+          image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          userId: 3,
+          sponsored: false,
+          featured: false
+        },
+        {
+          id: 3,
+          title: "Terreno Residencial",
+          type: "terreno",
+          price: 220000,
+          location: "Zona Leste",
+          description: "Terreno plano, 300m², em condomínio fechado com segurança 24h.",
+          image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          userId: 2,
+          sponsored: true,
+          featured: false
+        },
+        {
+          id: 4,
+          title: "Sala Comercial",
+          type: "comercial",
+          price: 180000,
+          location: "Centro",
+          description: "Sala comercial bem localizada, ideal para escritório ou consultório.",
+          image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          userId: 3,
+          sponsored: false,
+          featured: false
+        }
+      ],
+      favorites: JSON.parse(localStorage.getItem('favorites')) || []
+    };
+
+    // Salvar dados no localStorage
+    function saveData() {
+      localStorage.setItem('users', JSON.stringify(db.users));
+      localStorage.setItem('properties', JSON.stringify(db.properties));
+      localStorage.setItem('favorites', JSON.stringify(db.favorites));
+    }
+
+    // Estado da aplicação
+    let currentUser = null;
+    let activeFilters = {
+      type: [],
+      price: [],
+      location: []
+    };
+
+    // Elementos DOM
+    const elements = {
+      authModal: document.getElementById('authModal'),
+      loginTab: document.getElementById('loginTab'),
+      registerTab: document.getElementById('registerTab'),
+      loginForm: document.getElementById('loginForm'),
+      registerForm: document.getElementById('registerForm'),
+      switchToRegister: document.getElementById('switchToRegister'),
+      switchToLogin: document.getElementById('switchToLogin'),
+      userMenu: document.getElementById('userMenu'),
+      userInfo: document.getElementById('userInfo'),
+      userName: document.getElementById('userName'),
+      userAvatar: document.getElementById('userAvatar'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      searchInput: document.getElementById('searchInput'),
+      searchBtn: document.getElementById('searchBtn'),
+      filterBtn: document.getElementById('filterBtn'),
+      advancedFilters: document.getElementById('advancedFilters'),
+      clearFilters: document.getElementById('clearFilters'),
+      applyFilters: document.getElementById('applyFilters'),
+      propertiesGrid: document.getElementById('propertiesGrid'),
+      adminPanelBtn: document.getElementById('adminPanelBtn'),
+      adminPanel: document.getElementById('adminPanel'),
+      overlay: document.getElementById('overlay'),
+      announceBtn: document.getElementById('announceBtn'),
+      addPropertyBtn: document.getElementById('addPropertyBtn'),
+      propertyModal: document.getElementById('propertyModal'),
+      propertyForm: document.getElementById('propertyForm'),
+      cancelPropertyBtn: document.getElementById('cancelPropertyBtn'),
+      profileModal: document.getElementById('profileModal'),
+      profileName: document.getElementById('profileName'),
+      profileEmail: document.getElementById('profileEmail'),
+      profileAvatar: document.getElementById('profileAvatar'),
+      profilePhone: document.getElementById('profilePhone'),
+      profileType: document.getElementById('profileType'),
+      saveProfileBtn: document.getElementById('saveProfileBtn'),
+      closeProfileBtn: document.getElementById('closeProfileBtn'),
+      statProperties: document.getElementById('statProperties'),
+      statFavorites: document.getElementById('statFavorites')
+    };
+
+    // Inicialização
+    function init() {
+      // Verificar se há usuário logado
+      const savedUser = localStorage.getItem('currentUser');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        updateUI();
+      } else {
+        elements.authModal.style.display = 'flex';
+      }
+
+      // Carregar propriedades
+      renderProperties();
+
+      // Configurar eventos
+      setupEventListeners();
+    }
+
+    // Configurar eventos
+    function setupEventListeners() {
+      // Sistema de autenticação
+      elements.loginTab.addEventListener('click', () => switchAuthTab('login'));
+      elements.registerTab.addEventListener('click', () => switchAuthTab('register'));
+      elements.switchToRegister.addEventListener('click', () => switchAuthTab('register'));
+      elements.switchToLogin.addEventListener('click', () => switchAuthTab('login'));
+      elements.loginForm.addEventListener('submit', handleLogin);
+      elements.registerForm.addEventListener('submit', handleRegister);
+      elements.logoutBtn.addEventListener('click', handleLogout);
+
+      // Sistema de busca e filtros
+      elements.searchBtn.addEventListener('click', handleSearch);
+      elements.searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') handleSearch();
+      });
+      elements.filterBtn.addEventListener('click', toggleFilters);
+      elements.clearFilters.addEventListener('click', clearFilters);
+      elements.applyFilters.addEventListener('click', applyFilters);
+
+      // Configurar eventos dos filtros
+      document.querySelectorAll('.filter-option').forEach(option => {
+        option.addEventListener('click', function() {
+          this.classList.toggle('active');
+        });
+      });
+
+      // Sistema de propriedades
+      elements.announceBtn.addEventListener('click', () => {
+        elements.propertyModal.style.display = 'flex';
+      });
+      
+      elements.addPropertyBtn.addEventListener('click', () => {
+        elements.propertyModal.style.display = 'flex';
+      });
+      
+      elements.propertyForm.addEventListener('submit', handleAddProperty);
+      elements.cancelPropertyBtn.addEventListener('click', () => {
+        elements.propertyModal.style.display = 'none';
+      });
+
+      // Sistema de perfil
+      elements.userInfo.addEventListener('click', showProfile);
+      elements.saveProfileBtn.addEventListener('click', saveProfile);
+      elements.closeProfileBtn.addEventListener('click', () => {
+        elements.profileModal.style.display = 'none';
+      });
+
+      // Painel administrativo
+      elements.adminPanelBtn.addEventListener('click', toggleAdminPanel);
+      elements.overlay.addEventListener('click', closeAdminPanel);
+
+      // Abas do painel administrativo
+      document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          // Remover classe active de todas as abas
+          document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+          // Adicionar classe active à aba clicada
+          this.classList.add('active');
+          
+          // Esconder todos os conteúdos
+          document.querySelectorAll('.admin-tab-content').forEach(content => {
+            content.style.display = 'none';
+          });
+          
+          // Mostrar o conteúdo da aba selecionada
+          const tabId = this.getAttribute('data-tab') + 'Tab';
+          document.getElementById(tabId).style.display = 'block';
+          
+          // Carregar dados específicos da aba
+          if (this.getAttribute('data-tab') === 'properties') {
+            loadAdminProperties();
+          } else if (this.getAttribute('data-tab') === 'users') {
+            loadAdminUsers();
+          } else if (this.getAttribute('data-tab') === 'sponsors') {
+            loadAdminSponsors();
+          }
+        });
+      });
+
+      // Proteção contra captura de tela
+      document.addEventListener('keydown', function(e) {
+        // Bloquear F12 (DevTools)
+        if(e.key === 'F12') {
+          e.preventDefault();
+          showNotification('Ação não permitida', 'error');
+        }
+        
+        // Bloquear Ctrl+Shift+I (DevTools)
+        if(e.ctrlKey && e.shiftKey && e.key === 'I') {
+          e.preventDefault();
+          showNotification('Ação não permitida', 'error');
+        }
+        
+        // Bloquear Ctrl+Shift+J (Console)
+        if(e.ctrlKey && e.shiftKey && e.key === 'J') {
+          e.preventDefault();
+          showNotification('Ação não permitida', 'error');
+        }
+        
+        // Bloquear Ctrl+U (Ver código fonte)
+        if(e.ctrlKey && e.key === 'u') {
+          e.preventDefault();
+          showNotification('Ação não permitida', 'error');
+        }
+      });
+      
+      // Bloquear menu de contexto (botão direito)
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        showNotification('Ação não permitida', 'error');
+      });
+    }
+
+    // Sistema de notificações
+    function showNotification(message, type = 'info', title = '') {
+      const notificationContainer = document.getElementById('notificationContainer');
+      
+      // Definir título padrão baseado no tipo
+      if (!title) {
+        switch(type) {
+          case 'success': title = 'Sucesso'; break;
+          case 'error': title = 'Erro'; break;
+          case 'warning': title = 'Aviso'; break;
+          default: title = 'Informação';
+        }
+      }
+      
+      // Criar elemento de notificação
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <div class="notification-icon">
+          <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation' : type === 'warning' ? 'exclamation-triangle' : 'info'}"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-title">${title}</div>
+          <div class="notification-message">${message}</div>
+        </div>
+        <button class="notification-close">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      // Adicionar ao container
+      notificationContainer.appendChild(notification);
+      
+      // Mostrar notificação
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 100);
+      
+      // Configurar botão de fechar
+      const closeBtn = notification.querySelector('.notification-close');
+      closeBtn.addEventListener('click', () => {
+        closeNotification(notification);
+      });
+      
+      // Fechar automaticamente após 5 segundos
+      setTimeout(() => {
+        if (notification.parentNode) {
+          closeNotification(notification);
+        }
+      }, 5000);
+    }
+    
+    function closeNotification(notification) {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 500);
+    }
+
+    // Sistema de autenticação
+    function switchAuthTab(tab) {
+      if (tab === 'login') {
+        elements.loginTab.classList.add('active');
+        elements.registerTab.classList.remove('active');
+        elements.loginForm.style.display = 'block';
+        elements.registerForm.style.display = 'none';
+      } else {
+        elements.loginTab.classList.remove('active');
+        elements.registerTab.classList.add('active');
+        elements.loginForm.style.display = 'none';
+        elements.registerForm.style.display = 'block';
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      // Verificar credenciais
+      const user = db.users.find(u => u.email === email && u.password === password);
+      
+      if (user) {
+        currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        elements.authModal.style.display = 'none';
+        updateUI();
+        showNotification('Login realizado com sucesso!', 'success');
+      } else {
+        showNotification('E-mail ou senha incorretos.', 'error');
+      }
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('registerName').value;
+      const email = document.getElementById('registerEmail').value;
+      const phone = document.getElementById('registerPhone').value;
+      const password = document.getElementById('registerPassword').value;
+      const type = document.getElementById('registerType').value;
+      
+      // Verificar se o e-mail já existe
+      if (db.users.find(u => u.email === email)) {
+        showNotification('Este e-mail já está cadastrado.', 'error');
+        return;
+      }
+      
+      // Criar novo usuário
+      const newUser = {
+        id: db.users.length + 1,
+        name,
+        email,
+        phone,
+        password,
+        type
+      };
+      
+      db.users.push(newUser);
+      saveData();
+      
+      showNotification('Cadastro realizado com sucesso! Faça login para continuar.', 'success');
+      switchAuthTab('login');
+      
+      // Limpar formulário
+      document.getElementById('registerForm').reset();
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      localStorage.removeItem('currentUser');
+      updateUI();
+      elements.authModal.style.display = 'flex';
+      showNotification('Logout realizado com sucesso.', 'info');
+    }
+
+    // Atualizar interface baseada no estado do usuário
+    function updateUI() {
+      if (currentUser) {
+        elements.userMenu.style.display = 'flex';
+        elements.userName.textContent = currentUser.name;
+        elements.userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+        
+        // Mostrar botões baseados no tipo de usuário
+        if (currentUser.type === 'admin') {
+          elements.adminPanelBtn.style.display = 'flex';
+          elements.addPropertyBtn.style.display = 'flex';
+          elements.announceBtn.style.display = 'flex';
+        } else if (currentUser.type === 'sponsor') {
+          elements.addPropertyBtn.style.display = 'flex';
+          elements.announceBtn.style.display = 'flex';
+        } else {
+          elements.announceBtn.style.display = 'flex';
+        }
+      } else {
+        elements.userMenu.style.display = 'none';
+        elements.adminPanelBtn.style.display = 'none';
+        elements.addPropertyBtn.style.display = 'none';
+        elements.announceBtn.style.display = 'none';
+      }
+    }
+
+    // Sistema de busca e filtros
+    function handleSearch() {
+      const query = elements.searchInput.value.toLowerCase();
+      renderProperties(query);
+    }
+
+    function toggleFilters() {
+      elements.advancedFilters.classList.toggle('show');
+    }
+
+    function clearFilters() {
+      // Limpar filtros ativos
+      activeFilters = {
+        type: [],
+        price: [],
+        location: []
+      };
+      
+      // Remover classe active de todos os botões de filtro
+      document.querySelectorAll('.filter-option').forEach(option => {
+        option.classList.remove('active');
+      });
+      
+      // Fechar menu de filtros
+      elements.advancedFilters.classList.remove('show');
+      
+      // Renderizar propriedades sem filtros
+      renderProperties();
+    }
+
+    function applyFilters() {
+      // Coletar filtros ativos
+      activeFilters = {
+        type: [],
+        price: [],
+        location: []
+      };
+      
+      document.querySelectorAll('.filter-option.active').forEach(option => {
+        const filter = option.getAttribute('data-filter');
+        const value = option.getAttribute('data-value');
+        activeFilters[filter].push(value);
+      });
+      
+      // Fechar menu de filtros
+      elements.advancedFilters.classList.remove('show');
+      
+      // Aplicar filtros
+      renderProperties();
+    }
+
+    // Renderizar propriedades
+    function renderProperties(searchQuery = '') {
+      let filteredProperties = [...db.properties];
+      
+      // Aplicar filtros
+      if (activeFilters.type.length > 0) {
+        filteredProperties = filteredProperties.filter(property => 
+          activeFilters.type.includes(property.type)
+        );
+      }
+      
+      if (activeFilters.location.length > 0) {
+        filteredProperties = filteredProperties.filter(property => 
+          activeFilters.location.includes(property.location.toLowerCase())
+        );
+      }
+      
+      if (activeFilters.price.length > 0) {
+        filteredProperties = filteredProperties.filter(property => {
+          return activeFilters.price.some(range => {
+            if (range === '0-200000') return property.price <= 200000;
+            if (range === '200000-500000') return property.price > 200000 && property.price <= 500000;
+            if (range === '500000-1000000') return property.price > 500000 && property.price <= 1000000;
+            if (range === '1000000+') return property.price > 1000000;
+            return true;
+          });
+        });
+      }
+      
+      // Aplicar busca
+      if (searchQuery) {
+        filteredProperties = filteredProperties.filter(property => 
+          property.title.toLowerCase().includes(searchQuery) ||
+          property.location.toLowerCase().includes(searchQuery) ||
+          property.type.toLowerCase().includes(searchQuery) ||
+          property.description.toLowerCase().includes(searchQuery)
+        );
+      }
+      
+      // Ordenar: patrocinados primeiro, depois em destaque
+      filteredProperties.sort((a, b) => {
+        if (a.sponsored && !b.sponsored) return -1;
+        if (!a.sponsored && b.sponsored) return 1;
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        return 0;
+      });
+      
+      // Renderizar
+      elements.propertiesGrid.innerHTML = '';
+      
+      if (filteredProperties.length === 0) {
+        elements.propertiesGrid.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; color: #ccc;"></i>
+            <h3>Nenhum imóvel encontrado</h3>
+            <p>Tente ajustar seus filtros ou termos de busca.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      filteredProperties.forEach(property => {
+        const user = db.users.find(u => u.id === property.userId);
+        const isSponsored = property.sponsored;
+        const isFeatured = property.featured;
+        
+        const propertyCard = document.createElement('a');
+        propertyCard.className = 'property-card';
+        propertyCard.href = '#';
+        propertyCard.addEventListener('click', (e) => {
+          e.preventDefault();
+          showPropertyDetails(property);
+        });
+        
+        let badge = '';
+        if (isSponsored) {
+          badge = `<div class="property-badge patrocinado">Patrocinado</div>`;
+        } else if (isFeatured) {
+          badge = `<div class="property-badge destaque">Destaque</div>`;
+        }
+        
+        propertyCard.innerHTML = `
+          ${badge}
+          <img src="${property.image}" alt="${property.title}" class="property-image">
+          <div class="property-info">
+            <h3 class="property-title">${property.title}</h3>
+            <div class="property-location">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>${property.location}</span>
+            </div>
+            <div class="property-features">
+              <div class="feature">
+                <i class="fas fa-expand"></i>
+                <span>${property.type}</span>
+              </div>
+              <div class="feature">
+                <i class="fas fa-user"></i>
+                <span>${user ? user.name : 'Anônimo'}</span>
+              </div>
+            </div>
+            <div class="property-price">R$ ${property.price.toLocaleString('pt-BR')}</div>
+            <div class="property-type">${property.type}</div>
+          </div>
+        `;
+        
+        elements.propertiesGrid.appendChild(propertyCard);
+      });
+    }
+
+    // Mostrar detalhes do imóvel
+    function showPropertyDetails(property) {
+      const user = db.users.find(u => u.id === property.userId);
+      
+      // Criar modal de detalhes
+      const modal = document.createElement('div');
+      modal.className = 'property-detail-modal';
+      modal.innerHTML = `
+        <div class="property-detail-container">
+          <div class="property-detail-header">
+            <div>
+              <h2 class="property-detail-title">${property.title}</h2>
+              <div class="property-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>${property.location}</span>
+              </div>
+            </div>
+            <button class="property-detail-close">&times;</button>
+          </div>
+          <div class="property-detail-content">
+            <div>
+              <img src="${property.image}" alt="${property.title}" class="property-detail-image">
+              <div class="property-detail-info">
+                <h3>Descrição</h3>
+                <p>${property.description}</p>
+                
+                <h3>Características</h3>
+                <div class="property-detail-features">
+                  <div class="property-detail-feature">
+                    <i class="fas fa-home"></i>
+                    <span>Tipo: ${property.type}</span>
+                  </div>
+                  <div class="property-detail-feature">
+                    <i class="fas fa-tag"></i>
+                    <span>Preço: R$ ${property.price.toLocaleString('pt-BR')}</span>
+                  </div>
+                  <div class="property-detail-feature">
+                    <i class="fas fa-user"></i>
+                    <span>Anunciante: ${user ? user.name : 'Anônimo'}</span>
+                  </div>
+                  <div class="property-detail-feature">
+                    <i class="fas fa-phone"></i>
+                    <span>Contato: ${user ? user.phone : 'Não informado'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="property-detail-contact">
+              <h3>Entre em Contato</h3>
+              <p>Para mais informações sobre este imóvel, entre em contato com o anunciante:</p>
+              <p><strong>Nome:</strong> ${user ? user.name : 'Anônimo'}</p>
+              <p><strong>Telefone:</strong> ${user ? user.phone : 'Não informado'}</p>
+              <p><strong>E-mail:</strong> ${user ? user.email : 'Não informado'}</p>
+              
+              ${currentUser && (currentUser.id === property.userId || currentUser.type === 'admin') ? `
+                <button class="delete-property-btn" data-id="${property.id}">
+                  <i class="fas fa-trash"></i> Excluir Anúncio
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Configurar eventos
+      const closeBtn = modal.querySelector('.property-detail-close');
+      closeBtn.addEventListener('click', () => {
+        document.body.removeChild(modal);
+      });
+      
+      const deleteBtn = modal.querySelector('.delete-property-btn');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', function() {
+          const propertyId = parseInt(this.getAttribute('data-id'));
+          deleteProperty(propertyId);
+          document.body.removeChild(modal);
+        });
+      }
+      
+      // Fechar ao clicar fora
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          document.body.removeChild(modal);
+        }
+      });
+    }
+
+    // Adicionar propriedade
+    function handleAddProperty(e) {
+      e.preventDefault();
+      
+      const title = document.getElementById('propertyTitle').value;
+      const type = document.getElementById('propertyType').value;
+      const price = parseInt(document.getElementById('propertyPrice').value);
+      const location = document.getElementById('propertyLocation').value;
+      const description = document.getElementById('propertyDescription').value;
+      const image = document.getElementById('propertyImage').value || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80';
+      
+      const newProperty = {
+        id: db.properties.length + 1,
+        title,
+        type,
+        price,
+        location,
+        description,
+        image,
+        userId: currentUser.id,
+        sponsored: currentUser.type === 'sponsor' || currentUser.type === 'admin',
+        featured: false
+      };
+      
+      db.properties.push(newProperty);
+      saveData();
+      
+      elements.propertyModal.style.display = 'none';
+      document.getElementById('propertyForm').reset();
+      
+      renderProperties();
+      
+      showNotification('Imóvel anunciado com sucesso!', 'success');
+    }
+
+    // Excluir propriedade
+    function deleteProperty(id) {
+      const index = db.properties.findIndex(p => p.id === id);
+      if (index !== -1) {
+        db.properties.splice(index, 1);
+        saveData();
+        renderProperties();
+        showNotification('Imóvel excluído com sucesso!', 'success');
+      }
+    }
+
+    // Sistema de perfil
+    function showProfile() {
+      if (!currentUser) return;
+      
+      elements.profileName.textContent = currentUser.name;
+      elements.profileEmail.textContent = currentUser.email;
+      elements.profileAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+      elements.profilePhone.value = currentUser.phone;
+      elements.profileType.value = currentUser.type === 'admin' ? 'Administrador' : 
+                                  currentUser.type === 'sponsor' ? 'Patrocinador' : 'Usuário';
+      
+      // Estatísticas
+      const userProperties = db.properties.filter(p => p.userId === currentUser.id).length;
+      const userFavorites = db.favorites.filter(f => f.userId === currentUser.id).length;
+      
+      elements.statProperties.textContent = userProperties;
+      elements.statFavorites.textContent = userFavorites;
+      
+      elements.profileModal.style.display = 'flex';
+    }
+
+    function saveProfile() {
+      if (!currentUser) return;
+      
+      const phone = elements.profilePhone.value;
+      
+      // Atualizar dados do usuário
+      const userIndex = db.users.findIndex(u => u.id === currentUser.id);
+      if (userIndex !== -1) {
+        db.users[userIndex].phone = phone;
+        currentUser.phone = phone;
+        
+        saveData();
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        updateUI();
+        showNotification('Perfil atualizado com sucesso!', 'success');
+      }
+    }
+
+    // Painel administrativo
+    function toggleAdminPanel() {
+      elements.adminPanel.classList.toggle('show');
+      elements.overlay.classList.toggle('show');
+      
+      if (elements.adminPanel.classList.contains('show')) {
+        loadAdminProperties();
+      }
+    }
+
+    function closeAdminPanel() {
+      elements.adminPanel.classList.remove('show');
+      elements.overlay.classList.remove('show');
+    }
+
+    function loadAdminProperties() {
+      const propertiesList = document.getElementById('adminPropertiesList');
+      propertiesList.innerHTML = '';
+      
+      db.properties.forEach(property => {
+        const user = db.users.find(u => u.id === property.userId);
+        
+        const propertyItem = document.createElement('div');
+        propertyItem.className = 'property-item';
+        propertyItem.innerHTML = `
+          <div>
+            <div><strong>${property.title}</strong></div>
+            <div style="font-size: 0.9rem; color: #666;">Por: ${user ? user.name : 'Anônimo'} | R$ ${property.price.toLocaleString('pt-BR')}</div>
+          </div>
+          <button class="delete-btn" data-id="${property.id}">Excluir</button>
+        `;
+        
+        propertiesList.appendChild(propertyItem);
+        
+        const deleteBtn = propertyItem.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', function() {
+          const propertyId = parseInt(this.getAttribute('data-id'));
+          deleteProperty(propertyId);
+          loadAdminProperties();
+        });
+      });
+    }
+
+    function loadAdminUsers() {
+      const usersList = document.getElementById('adminUsersList');
+      usersList.innerHTML = '';
+      
+      const regularUsers = db.users.filter(u => u.type === 'user');
+      
+      if (regularUsers.length === 0) {
+        usersList.innerHTML = '<p>Nenhum usuário comum cadastrado.</p>';
+        return;
+      }
+      
+      regularUsers.forEach(user => {
+        const userItem = document.createElement('div');
+        userItem.className = 'user-item';
+        userItem.innerHTML = `
+          <div class="user-name">${user.name}</div>
+          <div class="user-email">${user.email}</div>
+          <div class="user-phone">${user.phone}</div>
+        `;
+        
+        usersList.appendChild(userItem);
+      });
+    }
+
+    function loadAdminSponsors() {
+      const sponsorsList = document.getElementById('adminSponsorsList');
+      sponsorsList.innerHTML = '';
+      
+      const sponsors = db.users.filter(u => u.type === 'sponsor');
+      
+      if (sponsors.length === 0) {
+        sponsorsList.innerHTML = '<p>Nenhum patrocinador cadastrado.</p>';
+        return;
+      }
+      
+      sponsors.forEach(user => {
+        const userProperties = db.properties.filter(p => p.userId === user.id);
+        
+        const userItem = document.createElement('div');
+        userItem.className = 'user-item';
+        userItem.innerHTML = `
+          <div class="user-name">${user.name}</div>
+          <div class="user-email">${user.email}</div>
+          <div class="user-phone">${user.phone}</div>
+          <div style="margin-top: 10px; font-size: 0.9rem;">
+            <strong>Imóveis anunciados:</strong> ${userProperties.length}
+          </div>
+        `;
+        
+        sponsorsList.appendChild(userItem);
+      });
+    }
+
+    // Inicializar aplicação
+    init();
+  </script>
+</body>
+  </html>
