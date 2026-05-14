@@ -353,7 +353,7 @@
             border: none;
             color: white;
             font-size: 1.5rem;
-            cor: pointer;
+            cursor: pointer;
         }
         .btn-ver-mapa {
             background: #fb6b2b;
@@ -365,38 +365,11 @@
             font-size: 0.9rem;
         }
 
-        /* BOTÃO PARA FAIR PRICE IMÓVEIS */
-        .fairprice-btn-container {
-            text-align: center;
-            margin: 1rem 1rem 0;
-        }
-        .btn-fairprice {
-            background: linear-gradient(135deg, #4CAF50, #3e8e41);
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 60px;
-            font-weight: 800;
-            font-size: 1.1rem;
-            cursor: pointer;
-            color: white;
-            transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
-        .btn-fairprice:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
-            background: linear-gradient(135deg, #45a049, #2e7d32);
-        }
-
         footer {
             text-align: center;
             padding: 1.5rem;
             border-top: 1px solid #222;
             background: #0a0a12;
-            margin-top: 1rem;
         }
         .copyright {
             font-size: 0.7rem;
@@ -405,7 +378,6 @@
         @media (max-width: 600px) {
             .top-header { flex-direction: column; align-items: start; gap: 8px; }
             .logo-esquerda .porto { font-size: 1.3rem; }
-            .btn-fairprice { padding: 0.8rem 1.5rem; font-size: 0.9rem; }
         }
         .no-results {
             text-align: center;
@@ -479,14 +451,6 @@
     </button>
 </div>
 
-<!-- BOTÃO PARA FAIR PRICE IMÓVEIS -->
-<div class="fairprice-btn-container">
-    <button class="btn-fairprice" id="fairpriceBtn">
-        <i class="fas fa-building"></i> Fair Price Imóveis
-        <i class="fas fa-arrow-right"></i>
-    </button>
-</div>
-
 <!-- MODAL MAPS -->
 <div id="mapModal" class="modal-maps">
     <div class="modal-content">
@@ -519,576 +483,7 @@
     setInterval(updateRealTime, 1000);
     updateRealTime();
 
-    // BOTÃO FAIR PRICE - abre o site em nova aba
-    document.getElementById("fairpriceBtn").addEventListener("click", function() {
-        // Criar um blob com o conteúdo do HTML da Fair Price
-        const fairPriceHTML = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fair Price - Imóveis</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary-color: #4CAF50;
-      --primary-dark: #3e8e41;
-      --secondary-color: #FF5722;
-      --dark-color: #333;
-      --light-color: #f8f9fa;
-      --gray-color: #666;
-      --border-radius: 10px;
-      --box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      --transition: all 0.3s ease;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      margin: 0;
-      background-color: #f0f0f0;
-      font-family: 'Poppins', sans-serif;
-      color: var(--dark-color);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    .notification-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 3000;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 350px;
-    }
-    
-    .notification {
-      background: white;
-      padding: 15px 20px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      transform: translateX(400px);
-      opacity: 0;
-      transition: all 0.5s ease;
-      border-left: 4px solid var(--primary-color);
-    }
-    
-    .notification.show {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    
-    .notification.success { border-left-color: var(--primary-color); }
-    .notification.error { border-left-color: #f44336; }
-    .notification.warning { border-left-color: #ff9800; }
-    .notification.info { border-left-color: #2196f3; }
-    
-    .notification-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 14px;
-    }
-    .notification.success .notification-icon { background-color: var(--primary-color); }
-    .notification.error .notification-icon { background-color: #f44336; }
-    .notification-content { flex: 1; }
-    .notification-title { font-weight: 600; margin-bottom: 5px; }
-    .notification-message { font-size: 0.9rem; color: var(--gray-color); }
-    .notification-close {
-      background: none;
-      border: none;
-      color: var(--gray-color);
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .auth-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-    
-    .auth-container {
-      background: white;
-      border-radius: var(--border-radius);
-      width: 90%;
-      max-width: 400px;
-      box-shadow: var(--box-shadow);
-      overflow: hidden;
-    }
-    
-    .auth-tabs {
-      display: flex;
-      background-color: var(--light-color);
-    }
-    
-    .auth-tab {
-      flex: 1;
-      padding: 15px;
-      text-align: center;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: var(--transition);
-    }
-    
-    .auth-tab.active {
-      border-bottom-color: var(--primary-color);
-      color: var(--primary-color);
-      font-weight: 600;
-    }
-    
-    .auth-form { padding: 30px; }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #ddd;
-      border-radius: var(--border-radius);
-      font-family: 'Poppins', sans-serif;
-    }
-    .auth-btn {
-      width: 100%;
-      padding: 12px;
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      font-weight: 500;
-    }
-    .auth-btn:hover { background-color: var(--primary-dark); }
-    .auth-switch { text-align: center; margin-top: 15px; font-size: 0.9rem; }
-    .auth-switch a { color: var(--primary-color); text-decoration: none; cursor: pointer; }
-
-    .user-menu {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      color: white;
-    }
-    .user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-    }
-    .logout-btn {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      padding: 8px 15px;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-
-    .header {
-      background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url('https://sonharemorar.mrv.com.br/wp-content/uploads/2023/05/villa-padova-ppc-fachada-divulgacao-imoveis-mrv.webp');
-      background-size: cover;
-      background-position: center;
-      width: 100%;
-      height: 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-    .header-content { z-index: 2; max-width: 800px; }
-    .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
-    .header p { font-size: 1.1rem; margin-bottom: 20px; }
-
-    .logo-redondo {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      border: 3px solid white;
-      margin-bottom: 20px;
-    }
-    .logo-redondo img { width: 100%; height: 100%; object-fit: cover; }
-
-    .partners-banner {
-      background-color: white;
-      padding: 20px 0;
-      overflow: hidden;
-      position: relative;
-    }
-    .partners-container {
-      display: flex;
-      animation: slide 30s linear infinite;
-      width: max-content;
-    }
-    .partner-item {
-      flex-shrink: 0;
-      width: 150px;
-      margin: 0 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .partner-item img { max-width: 100%; max-height: 60px; filter: grayscale(100%); transition: var(--transition); }
-    .partner-item:hover img { filter: grayscale(0%); }
-    @keyframes slide {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    .search-filter-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      padding: 30px 20px;
-      background-color: var(--light-color);
-      flex-wrap: wrap;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .search-bar {
-      position: relative;
-      width: 60%;
-      max-width: 600px;
-      min-width: 300px;
-    }
-    .search-bar input {
-      width: 100%;
-      padding: 15px 20px;
-      border-radius: 30px;
-      border: none;
-      font-size: 16px;
-      box-shadow: var(--box-shadow);
-      padding-right: 50px;
-    }
-    .search-bar button {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--primary-color);
-      font-size: 20px;
-    }
-
-    .filter-container { position: relative; width: 30%; min-width: 200px; max-width: 300px; }
-    .main-filter-btn {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 15px 25px;
-      border-radius: 30px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 16px;
-      font-weight: 500;
-      width: 100%;
-      justify-content: center;
-    }
-    .advanced-filters {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      background: white;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      z-index: 1000;
-      display: none;
-      padding: 20px;
-      margin-top: 10px;
-    }
-    .advanced-filters.show { display: block; }
-    .filter-section { margin-bottom: 20px; }
-    .filter-section h4 { margin-bottom: 10px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
-    .filter-options { display: flex; flex-wrap: wrap; gap: 8px; }
-    .filter-option {
-      background-color: #f0f0f0;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .filter-option.active { background-color: var(--primary-color); color: white; }
-    .filter-actions { display: flex; justify-content: space-between; margin-top: 20px; }
-    .clear-filters { background: none; border: none; color: var(--gray-color); cursor: pointer; }
-    .apply-filters { background-color: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
-
-    .properties-container { max-width: 1200px; margin: 30px auto; padding: 20px; flex: 1; }
-    .properties-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 30px;
-      margin-top: 30px;
-    }
-    .property-card {
-      background-color: white;
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      box-shadow: var(--box-shadow);
-      transition: var(--transition);
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      position: relative;
-    }
-    .property-card:hover { transform: translateY(-5px); }
-    .property-badge {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      z-index: 2;
-    }
-    .property-badge.destaque { background-color: var(--secondary-color); }
-    .property-badge.patrocinado { background-color: #ff9800; }
-    .property-image { width: 100%; height: 200px; object-fit: cover; }
-    .property-info { padding: 20px; }
-    .property-title { font-size: 1.3rem; margin-bottom: 10px; }
-    .property-location { display: flex; align-items: center; gap: 5px; color: var(--gray-color); margin-bottom: 10px; font-size: 0.9rem; }
-    .property-features { display: flex; gap: 15px; margin: 15px 0; }
-    .feature { display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
-    .property-price { font-size: 1.2rem; font-weight: 600; color: var(--primary-color); margin-top: 10px; }
-    .property-type { display: inline-block; padding: 3px 8px; background-color: #e0f2e0; color: var(--primary-color); border-radius: 4px; font-size: 0.8rem; margin-top: 5px; }
-    .no-results { text-align: center; grid-column: 1 / -1; padding: 50px; color: var(--gray-color); }
-
-    .property-detail-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-      padding: 20px;
-    }
-    .property-detail-container {
-      background: white;
-      border-radius: var(--border-radius);
-      width: 90%;
-      max-width: 800px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .property-detail-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: flex-start; }
-    .property-detail-close { background: none; border: none; font-size: 24px; cursor: pointer; }
-    .property-detail-content { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-    .property-detail-image { width: 100%; border-radius: var(--border-radius); height: 300px; object-fit: cover; }
-    .property-detail-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
-    .property-detail-feature { display: flex; align-items: center; gap: 10px; }
-    .property-detail-contact { background-color: #f9f9f9; padding: 20px; border-radius: var(--border-radius); margin-top: 20px; }
-    .delete-property-btn { background-color: #f44336; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 15px; }
-
-    footer {
-      background-color: var(--dark-color);
-      color: white;
-      padding: 40px 20px;
-      margin-top: 50px;
-    }
-    .footer-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 30px;
-    }
-    .footer-column h3 { font-size: 1.2rem; margin-bottom: 20px; padding-bottom: 10px; position: relative; }
-    .footer-column h3::after { content: ''; position: absolute; left: 0; bottom: 0; width: 50px; height: 2px; background-color: var(--primary-color); }
-    .footer-links { list-style: none; }
-    .footer-links li { margin-bottom: 10px; }
-    .footer-links a { color: #ddd; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: var(--transition); }
-    .footer-links a:hover { color: var(--primary-color); transform: translateX(5px); }
-    .social-links { display: flex; gap: 15px; margin-top: 20px; }
-    .social-links a {
-      color: white;
-      background-color: rgba(255,255,255,0.1);
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .copyright { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); color: #aaa; font-size: 0.9rem; }
-
-    .admin-panel-btn, .add-property-btn, .announce-btn {
-      position: fixed;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 24px;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      z-index: 1000;
-    }
-    .admin-panel-btn { bottom: 30px; right: 30px; background-color: var(--secondary-color); color: white; }
-    .add-property-btn { bottom: 100px; right: 30px; background-color: var(--primary-color); color: white; }
-    .announce-btn { bottom: 170px; right: 30px; background-color: #2196f3; color: white; font-size: 20px; }
-
-    .admin-panel {
-      position: fixed;
-      top: 0;
-      right: -400px;
-      width: 400px;
-      height: 100vh;
-      background-color: white;
-      box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-      transition: var(--transition);
-      z-index: 1001;
-      padding: 30px;
-      overflow-y: auto;
-    }
-    .admin-panel.show { right: 0; }
-    .admin-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #eee; }
-    .admin-tab { padding: 10px 15px; cursor: pointer; border-bottom: 2px solid transparent; }
-    .admin-tab.active { border-bottom-color: var(--primary-color); color: var(--primary-color); font-weight: 600; }
-    .property-item, .user-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .delete-btn { background-color: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-      z-index: 1000;
-      display: none;
-    }
-    .overlay.show { display: block; }
-
-    @media (max-width: 768px) {
-      .search-filter-container { flex-direction: column; }
-      .search-bar, .filter-container { width: 100%; max-width: 100%; }
-      .properties-grid { grid-template-columns: 1fr; }
-      .property-detail-content { grid-template-columns: 1fr; }
-      .admin-panel { width: 100%; max-width: 100%; }
-    }
-  </style>
-</head>
-<body>
-  <div class="notification-container" id="notificationContainer"></div>
-  <div class="auth-modal" id="authModal" style="display: flex;">
-    <div class="auth-container">
-      <div class="auth-tabs">
-        <div class="auth-tab active" id="loginTab">Login</div>
-        <div class="auth-tab" id="registerTab">Cadastro</div>
-      </div>
-      <div class="auth-form">
-        <form id="loginForm" style="display: block;">
-          <div class="form-group"><label for="loginEmail">E-mail</label><input type="email" id="loginEmail" required></div>
-          <div class="form-group"><label for="loginPassword">Senha</label><input type="password" id="loginPassword" required></div>
-          <button type="submit" class="auth-btn">Entrar</button>
-          <div class="auth-switch">Não tem uma conta? <a id="switchToRegister">Cadastre-se</a></div>
-        </form>
-        <form id="registerForm" style="display: none;">
-          <div class="form-group"><label for="registerName">Nome Completo</label><input type="text" id="registerName" required></div>
-          <div class="form-group"><label for="registerEmail">E-mail</label><input type="email" id="registerEmail" required></div>
-          <div class="form-group"><label for="registerPhone">Telefone</label><input type="tel" id="registerPhone" required></div>
-          <div class="form-group"><label for="registerPassword">Senha</label><input type="password" id="registerPassword" required></div>
-          <div class="form-group"><label for="registerType">Tipo de Usuário</label><select id="registerType"><option value="user">Usuário</option><option value="sponsor">Patrocinador</option></select></div>
-          <button type="submit" class="auth-btn">Cadastrar</button>
-          <div class="auth-switch">Já tem uma conta? <a id="switchToLogin">Faça login</a></div>
-        </form>
-      </div>
-    </div>
-  </div>
-  <div class="profile-modal" id="profileModal" style="display: none;">...</div>
-  <div class="property-modal" id="propertyModal" style="display: none;">...</div>
-  <header class="header">
-    <div class="logo-redondo"><img src="https://via.placeholder.com/120x120/4CAF50/FFFFFF?text=FP" alt="Fair Price Logo"></div>
-    <div class="header-content"><h1>Fair Price Imóveis</h1><p>Encontre o imóvel dos seus sonhos com o melhor preço</p></div>
-    <div class="user-menu" id="userMenu" style="display: none;"><div class="user-info" id="userInfo"><div class="user-avatar" id="userAvatar">U</div><span id="userName">Usuário</span></div><button class="logout-btn" id="logoutBtn">Sair</button></div>
-  </header>
-  <div class="partners-banner"><div class="partners-container"><div class="partner-item"><img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Construtora+A"></div><div class="partner-item"><img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Imobiliária+B"></div><div class="partner-item"><img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Incorporadora+C"></div><div class="partner-item"><img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Banco+D"></div><div class="partner-item"><img src="https://via.placeholder.com/100x50/333/FFFFFF?text=Corretora+E"></div></div></div>
-  <div class="search-filter-container">
-    <div class="search-bar"><input type="text" id="searchInput" placeholder="Buscar por localização, tipo de imóvel..."><button id="searchBtn"><i class="fas fa-search"></i></button></div>
-    <div class="filter-container"><button class="main-filter-btn" id="filterBtn"><i class="fas fa-filter"></i> Filtros</button><div class="advanced-filters" id="advancedFilters"><div class="filter-section"><h4><i class="fas fa-home"></i> Tipo de Imóvel</h4><div class="filter-options"><button class="filter-option" data-filter="type" data-value="casa">Casa</button><button class="filter-option" data-filter="type" data-value="apartamento">Apartamento</button><button class="filter-option" data-filter="type" data-value="terreno">Terreno</button><button class="filter-option" data-filter="type" data-value="comercial">Comercial</button></div></div><div class="filter-section"><h4><i class="fas fa-tag"></i> Preço</h4><div class="filter-options"><button class="filter-option" data-filter="price" data-value="0-200000">Até R$ 200.000</button><button class="filter-option" data-filter="price" data-value="200000-500000">R$ 200.000 - 500.000</button><button class="filter-option" data-filter="price" data-value="500000-1000000">R$ 500.000 - 1.000.000</button><button class="filter-option" data-filter="price" data-value="1000000+">Acima de R$ 1.000.000</button></div></div><div class="filter-section"><h4><i class="fas fa-map-marker-alt"></i> Localização</h4><div class="filter-options"><button class="filter-option" data-filter="location" data-value="centro">Centro</button><button class="filter-option" data-filter="location" data-value="zona-sul">Zona Sul</button><button class="filter-option" data-filter="location" data-value="zona-norte">Zona Norte</button><button class="filter-option" data-filter="location" data-value="zona-leste">Zona Leste</button><button class="filter-option" data-filter="location" data-value="zona-oeste">Zona Oeste</button></div></div><div class="filter-actions"><button class="clear-filters" id="clearFilters">Limpar Filtros</button><button class="apply-filters" id="applyFilters">Aplicar Filtros</button></div></div></div>
-  </div>
-  <div class="properties-container"><h2>Imóveis em Destaque</h2><div class="properties-grid" id="propertiesGrid"></div></div>
-  <footer><div class="footer-container"><div class="footer-column"><h3>Sobre Nós</h3><p>Fair Price Imóveis é a plataforma que conecta você aos melhores imóveis com preços justos e transparentes.</p><div class="social-links"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-linkedin-in"></i></a></div></div><div class="footer-column"><h3>Links Rápidos</h3><ul class="footer-links"><li><a href="#"><i class="fas fa-home"></i> Início</a></li><li><a href="#"><i class="fas fa-search"></i> Buscar Imóveis</a></li><li><a href="#"><i class="fas fa-star"></i> Imóveis em Destaque</a></li><li><a href="#"><i class="fas fa-info-circle"></i> Sobre Nós</a></li><li><a href="#"><i class="fas fa-envelope"></i> Contato</a></li></ul></div><div class="footer-column"><h3>Contato</h3><ul class="footer-links"><li><a href="#"><i class="fas fa-map-marker-alt"></i> Rua Exemplo, 123 - São Paulo, SP</a></li><li><a href="#"><i class="fas fa-phone"></i> (11) 9999-9999</a></li><li><a href="#"><i class="fas fa-envelope"></i> contato@fairprice.com</a></li><li><a href="#"><i class="fas fa-clock"></i> Seg - Sex: 9h às 18h</a></li></ul></div></div><div class="copyright">&copy; 2026 Fair Price Imóveis. Todos os direitos reservados.</div></footer>
-  <div class="announce-btn" id="announceBtn" title="Anunciar Imóvel" style="display: none;"><i class="fas fa-bullhorn"></i></div>
-  <div class="add-property-btn" id="addPropertyBtn" title="Adicionar Imóvel (Patrocinador)" style="display: none;"><i class="fas fa-plus"></i></div>
-  <div class="admin-panel-btn" id="adminPanelBtn" title="Painel Administrativo" style="display: none;"><i class="fas fa-cog"></i></div>
-  <div class="overlay" id="overlay"></div>
-  <div class="admin-panel" id="adminPanel"><h2>Painel Administrativo</h2><div class="admin-tabs"><div class="admin-tab active" data-tab="properties">Imóveis</div><div class="admin-tab" data-tab="users">Usuários</div><div class="admin-tab" data-tab="sponsors">Patrocinadores</div></div><div class="admin-tab-content" id="propertiesTab"><h3>Gerenciar Imóveis</h3><div class="properties-list" id="adminPropertiesList"></div></div><div class="admin-tab-content" id="usersTab" style="display: none;"><h3>Gerenciar Usuários</h3><div class="users-list" id="adminUsersList"></div></div><div class="admin-tab-content" id="sponsorsTab" style="display: none;"><h3>Gerenciar Patrocinadores</h3><div class="users-list" id="adminSponsorsList"></div></div></div>
-  <script>
-    const db = { users: JSON.parse(localStorage.getItem('fairprice_users')) || [{ id: 1, name: "Admin", email: "admin@fairprice.com", password: "admin123", phone: "(11) 99999-9999", type: "admin" }], properties: JSON.parse(localStorage.getItem('fairprice_properties')) || [{ id: 1, title: "Casa Moderna com Piscina", type: "casa", price: 850000, location: "Zona Sul", description: "Linda casa moderna", image: "https://images.unsplash.com/photo-1613977257363-707ba9348227", userId: 1, sponsored: true, featured: true }], favorites: [] };
-    function saveData() { localStorage.setItem('fairprice_users', JSON.stringify(db.users)); localStorage.setItem('fairprice_properties', JSON.stringify(db.properties)); }
-    let currentUser = null;
-    let activeFilters = { type: [], price: [], location: [] };
-    function showNotification(msg, type) { alert(msg); }
-    function renderProperties() { document.getElementById('propertiesGrid').innerHTML = '<div class="no-results"><h3>Fair Price Imóveis</h3><p>Sistema de imóveis carregado com sucesso!</p></div>'; }
-    function init() { renderProperties(); setupEventListeners(); }
-    function setupEventListeners() {
-      document.getElementById('loginForm')?.addEventListener('submit', (e) => { e.preventDefault(); showNotification('Login demo - Fair Price Imóveis', 'success'); });
-      document.getElementById('fairpriceBtn')?.addEventListener('click', () => {});
-    }
-    init();
-  </script>
-</body>
-</html>`;
-        
-        // Criar blob e abrir em nova aba
-        const blob = new Blob([fairPriceHTML], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-    });
-
-    // EVENTOS
+    // EVENTOS ATUALIZADOS
     const eventos = [
         { nome: "MAROCHA", local: "Porto Seguro", estilo: "Bar & Covers", artista: "Banda Marocha", estrelas: 5, preco: "R$ 30", horario: "21:00", filtro: "musica", tipoLabel: "Música ao Vivo", lat: -16.4385, lng: -39.0806 },
         { nome: "LUAU TOA TOA", local: "Toa Toa", estilo: "#Axé", artista: "DJ Toa Toa", estrelas: 5, preco: "R$ 45", horario: "22:30", filtro: "acontecendo", tipoLabel: "Acontecendo Agora", lat: -16.4402, lng: -39.0788 },
@@ -1098,9 +493,11 @@
         { nome: "SBB - SPRING BREAK CARNAPORTO", local: "Orla Norte", estilo: "#Eletrônica", artista: "DJ SBB", estrelas: 5, preco: "R$ 55", horario: "23:30", filtro: "dj", tipoLabel: "DJ & Drinks", lat: -16.4250, lng: -39.0740 },
         { nome: "CARNAPORTO TURISMO", local: "Arraial d'Ajuda", estilo: "#Festa", artista: "Blocos de Rua", estrelas: 5, preco: "R$ 40", horario: "21:00", filtro: "acontecendo", tipoLabel: "Acontecendo Agora", lat: -16.5120, lng: -39.0720 },
         { nome: "BECO DAS CORES ARRAIAL", local: "Arraial d'Ajuda", estilo: "Drinks e Covers", artista: "Live Band", estrelas: 5, preco: "Grátis", horario: "20:00", filtro: "beco", tipoLabel: "BECO DAS CORES", lat: -16.5130, lng: -39.0710 },
-        { nome: "CLUB BALADA", local: "Porto Seguro", estilo: "#Funk", artista: "@Dimacam", estrelas: 5, preco: "R$ 40", horario: "23:00", filtro: "dj", tipoLabel: "DJ & Drinks", lat: -16.4400, lng: -39.0795 }
+        { nome: "CLUB BALADA", local: "Porto Seguro", estilo: "#Funk", artista: "@Dimacam", estrelas: 5, preco: "R$ 40", horario: "23:00", filtro: "dj", tipoLabel: "DJ & Drinks", lat: -16.4400, lng: -39.0795 },
+        { nome: "FORRÓ DO PORTO", local: "Arraial d'Ajuda", estilo: "#Forró", artista: "Sanfoneiro", estrelas: 5, preco: "R$ 10", horario: "22:00", filtro: "acontecendo", tipoLabel: "Acontecendo Agora", lat: -16.5130, lng: -39.0710 }
     ];
 
+    // DIAS
     let diasProgramacao = [
         { nome: "SEGUNDA", evento: "MAROCHA · Ao Vivo", filtroEvento: "musica" },
         { nome: "TERÇA", evento: "LUAU TOA TOA", filtroEvento: "acontecendo" },
@@ -1108,9 +505,10 @@
         { nome: "QUINTA", evento: "LUAU ONDAS · Reggae", filtroEvento: "acontecendo" },
         { nome: "SEXTA", evento: "CARNAPORTO", filtroEvento: "acontecendo" },
         { nome: "SÁBADO", evento: "SBB SPRING BREAK", filtroEvento: "dj" },
-        { nome: "DOMINGO", evento: "BECO DAS CORES ARRAIAL", filtroEvento: "beco" }
+        { nome: "DOMINGO", evento: "FORRÓ DO PORTO", filtroEvento: "musica" }
     ];
 
+    // MESES
     let mesesProgramacao = [
         { nome: "JANEIRO", evento: "Réveillon · Festas Incríveis", filtroEvento: "acontecendo" },
         { nome: "FEVEREIRO", evento: "Pré-Carnaporto", filtroEvento: "acontecendo" },
@@ -1127,6 +525,7 @@
     ];
 
     let currentFilter = "all";
+    let activeView = "days";
 
     function abrirMapsInterno(lat, lng) {
         const iframe = document.getElementById("mapsIframe");
@@ -1140,16 +539,30 @@
         document.getElementById("mapModal").classList.add("active");
     }
 
-    function closeModal() { document.getElementById("mapModal").classList.remove("active"); }
+    function closeModal() {
+        document.getElementById("mapModal").classList.remove("active");
+    }
 
     function renderDays() {
         const container = document.getElementById("daysView");
-        container.innerHTML = diasProgramacao.map(day => `<div class="day-card"><div class="day-name">${day.nome}</div><div class="day-event">${day.evento}</div><button class="day-btn" onclick="aplicarFiltro('${day.filtroEvento}')">📅 Ver eventos</button></div>`).join("");
+        container.innerHTML = diasProgramacao.map(day => `
+            <div class="day-card">
+                <div class="day-name">${day.nome}</div>
+                <div class="day-event">${day.evento}</div>
+                <button class="day-btn" onclick="aplicarFiltro('${day.filtroEvento}')">📅 Ver eventos</button>
+            </div>
+        `).join("");
     }
 
     function renderMonths() {
         const container = document.getElementById("monthsView");
-        container.innerHTML = mesesProgramacao.map(month => `<div class="month-card"><div class="month-name">${month.nome}</div><div class="month-event">${month.evento}</div><button class="month-btn" onclick="aplicarFiltro('${month.filtroEvento}')">📆 Ver eventos</button></div>`).join("");
+        container.innerHTML = mesesProgramacao.map(month => `
+            <div class="month-card">
+                <div class="month-name">${month.nome}</div>
+                <div class="month-event">${month.evento}</div>
+                <button class="month-btn" onclick="aplicarFiltro('${month.filtroEvento}')">📆 Ver eventos</button>
+            </div>
+        `).join("");
     }
 
     window.aplicarFiltro = (filtro) => {
@@ -1166,13 +579,34 @@
         const grid = document.getElementById("eventsGrid");
         const counterSpan = document.getElementById("eventsCounter");
         let filtered = [...eventos];
-        if(currentFilter !== "all") filtered = eventos.filter(ev => ev.filtro === currentFilter);
+        if(currentFilter !== "all") {
+            filtered = eventos.filter(ev => ev.filtro === currentFilter);
+        }
         counterSpan.innerText = filtered.length + " eventos";
         if(filtered.length === 0) {
             grid.innerHTML = `<div class="no-results"><i class="fas fa-info-circle"></i> Nenhum evento para esse filtro.</div>`;
             return;
         }
-        grid.innerHTML = filtered.map(ev => `<div class="event-card"><div class="event-header"><span><i class="fas fa-map-pin"></i> ${ev.local}</span><span><i class="fas fa-bolt"></i> ${ev.tipoLabel}</span></div><div class="event-body"><h4>${ev.nome}</h4><div class="event-tags"><span>${ev.estilo}</span><span>🎤 ${ev.artista}</span></div><div class="stars">${'★'.repeat(ev.estrelas)}</div><div class="price-row"><span><strong>${ev.preco}</strong> · ${ev.horario}</span><button class="btn-map" onclick="abrirMapsInterno(${ev.lat}, ${ev.lng})"><i class="fas fa-directions"></i> Como chegar</button></div></div></div>`).join("");
+        grid.innerHTML = filtered.map(ev => `
+            <div class="event-card">
+                <div class="event-header">
+                    <span><i class="fas fa-map-pin"></i> ${ev.local}</span>
+                    <span><i class="fas fa-bolt"></i> ${ev.tipoLabel}</span>
+                </div>
+                <div class="event-body">
+                    <h4>${ev.nome}</h4>
+                    <div class="event-tags">
+                        <span>${ev.estilo}</span>
+                        <span>🎤 ${ev.artista}</span>
+                    </div>
+                    <div class="stars">${'★'.repeat(ev.estrelas)}</div>
+                    <div class="price-row">
+                        <span><strong>${ev.preco}</strong> · ${ev.horario}</span>
+                        <button class="btn-map" onclick="abrirMapsInterno(${ev.lat}, ${ev.lng})"><i class="fas fa-directions"></i> Como chegar</button>
+                    </div>
+                </div>
+            </div>
+        `).join("");
     }
 
     function renderRegions() {
@@ -1219,12 +653,14 @@
             tabMonths.classList.remove("active-tab");
             daysView.style.display = "grid";
             monthsView.style.display = "none";
+            activeView = "days";
         });
         tabMonths.addEventListener("click", () => {
             tabMonths.classList.add("active-tab");
             tabDays.classList.remove("active-tab");
             daysView.style.display = "none";
             monthsView.style.display = "grid";
+            activeView = "months";
         });
         daysView.style.display = "grid";
         monthsView.style.display = "none";
@@ -1249,4 +685,3 @@
 </script>
 </body>
 </html>
-```
